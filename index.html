@@ -29,7 +29,6 @@
             box-shadow: 0 0 20px #ff0055;
         }
 
-        /* --- COMMON STYLES --- */
         input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid var(--secondary); color: #fff; border-radius: 8px; text-align: center; font-size: 16px; }
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-cyan { background: var(--primary); color: #000; }
@@ -88,13 +87,13 @@
         <div class="footer">
             <span style="color:var(--primary); font-weight: bold;">● ONLINE_DATA</span>
             <span id="clock"></span>
-            <span>DEV: @Vikashsahu07</span>
+            <span>DEV: 𝐯𝐢𝐤𝐚𝐬𝐡 𝐛𝐡𝐚𝐢</span>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDR_7jysqTcWxMehNsHLLgcYj_3uQNj1ks",
@@ -108,53 +107,31 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        
         let currentPass = "";
         const ADMIN_PIN = "493228";
 
-        // LIVE MONITORING: Jab bhi DB me password badlega ye trigger hoga
+        // Firebase Sync
         onValue(ref(db, 'admin_settings/app_password'), (snap) => {
-            currentPass = snap.val() || "1234"; 
-            
-            // Check if user is logged in with OLD password
-            const savedPass = localStorage.getItem("v_pass_token");
-            if(savedPass && savedPass !== currentPass) {
-                logoutUser(); // Password badalte hi logout!
+            const newPass = snap.val();
+            if (newPass) {
+                currentPass = newPass;
+                // Auto logout only if password truly changed and user was logged in
+                const savedToken = localStorage.getItem("v_pass_token");
+                if (savedToken && savedToken !== currentPass) {
+                    localStorage.clear();
+                    location.reload();
+                }
             }
         });
 
         window.login = function() {
-            const pass = document.getElementById('inputPass').value;
-            if(pass === currentPass) {
+            const passInput = document.getElementById('inputPass').value;
+            if (passInput === currentPass) {
                 localStorage.setItem("v_auth", "true");
-                localStorage.setItem("v_pass_token", currentPass); // Password ko token ki tarah save karna
+                localStorage.setItem("v_pass_token", currentPass);
                 showApp();
-            } else { document.getElementById('err').style.display = 'block'; }
-        };
-
-        function logoutUser() {
-            localStorage.removeItem("v_auth");
-            localStorage.removeItem("v_pass_token");
-            location.reload(); // Page refresh karke parda wapas le aao
-        }
-
-        window.verifyAdminPin = function() {
-            const pin = document.getElementById('adminPinInput').value;
-            if(pin === ADMIN_PIN) {
-                document.getElementById('pinArea').style.display = 'none';
-                document.getElementById('controlArea').style.display = 'block';
-                document.getElementById('newPassVal').value = currentPass;
-            } else { alert("Wrong Admin PIN!"); }
-        };
-
-        window.saveNewPass = function() {
-            const nPass = document.getElementById('newPassVal').value;
-            if(nPass) {
-                set(ref(db, 'admin_settings/app_password'), nPass)
-                .then(() => { 
-                    alert("Password Updated! All users will be logged out."); 
-                    closeAdmin(); 
-                });
+            } else {
+                document.getElementById('err').style.display = 'block';
             }
         };
 
@@ -163,19 +140,38 @@
             document.getElementById('mainContent').style.display = 'block';
         }
 
-        // Auto-login check
-        if(localStorage.getItem("v_auth") === "true" && localStorage.getItem("v_pass_token") === currentPass) { 
-            showApp(); 
+        // --- FIXED PERSISTENT LOGIN ---
+        // Page load par check karega ki token hai ya nahi
+        if (localStorage.getItem("v_auth") === "true") {
+            showApp();
         }
+
+        window.verifyAdminPin = function() {
+            if (document.getElementById('adminPinInput').value === ADMIN_PIN) {
+                document.getElementById('pinArea').style.display = 'none';
+                document.getElementById('controlArea').style.display = 'block';
+                document.getElementById('newPassVal').value = currentPass;
+            } else { alert("Wrong PIN!"); }
+        };
+
+        window.saveNewPass = function() {
+            const nPass = document.getElementById('newPassVal').value;
+            if (nPass) {
+                set(ref(db, 'admin_settings/app_password'), nPass).then(() => {
+                    alert("Updated! Logging out all users...");
+                    closeAdmin();
+                });
+            }
+        };
 
         let clicks = 0;
         window.checkAdminTrigger = function() {
             clicks++;
-            if(clicks >= 5) { document.getElementById('adminPanel').style.display = 'flex'; clicks = 0; }
+            if (clicks >= 5) { document.getElementById('adminPanel').style.display = 'flex'; clicks = 0; }
         };
 
-        window.closeAdmin = function() { 
-            document.getElementById('adminPanel').style.display = 'none'; 
+        window.closeAdmin = function() {
+            document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('pinArea').style.display = 'block';
             document.getElementById('controlArea').style.display = 'none';
         };
