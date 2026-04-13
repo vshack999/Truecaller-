@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIKASH SAHU | SECURE TERMINAL</title>
+    <title>𝐕𝐈𝐊𝐀𝐒𝐇 𝐒𝐀𝐇𝐔 | SECURE TERMINAL</title>
     <style>
         :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0f2027; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,7 +37,7 @@
 
         /* --- MAIN UI --- */
         #mainContent { display: none; }
-        .header { height: 110px; background: #000; border-bottom: 4px solid var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; position: fixed; top: 0; width: 100%; z-index: 1000; cursor: default; }
+        .header { height: 110px; background: #000; border-bottom: 4px solid var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; position: fixed; top: 0; width: 100%; z-index: 1000; }
         .header h1 { font-size: 36px; letter-spacing: 10px; color: var(--primary); text-shadow: 0 0 15px var(--primary); font-weight: 900; }
         
         .viewport { position: absolute; top: 110px; bottom: 60px; width: 100%; overflow-y: auto; background: #fff; }
@@ -69,7 +69,7 @@
             <div id="controlArea" style="display:none;">
                 <label style="font-size:10px; color:#aaa;">NEW APP PASSWORD</label>
                 <input type="text" id="newPassVal">
-                <button class="btn-cyan" onclick="saveNewPass()">Update Password</button>
+                <button class="btn-cyan" onclick="saveNewPass()">Update & Logout All</button>
             </div>
             <button style="background:#333; color:#fff; margin-top:10px;" onclick="closeAdmin()">Close</button>
         </div>
@@ -77,7 +77,7 @@
 
     <div id="mainContent">
         <div class="header" onclick="checkAdminTrigger()">
-            <h1>VIKASH SAHU</h1>
+            <h1>𝐕𝐈𝐊𝐀𝐒𝐇 𝐒𝐀𝐇𝐔</h1>
             <p style="font-size:9px; color:rgba(255,255,255,0.3); letter-spacing: 4px;">SECURE NODE ALPHA-7</p>
         </div>
         <div class="viewport">
@@ -88,7 +88,7 @@
         <div class="footer">
             <span style="color:var(--primary); font-weight: bold;">● ONLINE_DATA</span>
             <span id="clock"></span>
-            <span>DEV: vikash bhai </span>
+            <span>DEV: @Vikashsahu07</span>
         </div>
     </div>
 
@@ -110,23 +110,34 @@
         const db = getDatabase(app);
         
         let currentPass = "";
-        const ADMIN_PIN = "493228"; // Aapka secret PIN
+        const ADMIN_PIN = "493228";
 
-        // Fetch Password from Firebase
+        // LIVE MONITORING: Jab bhi DB me password badlega ye trigger hoga
         onValue(ref(db, 'admin_settings/app_password'), (snap) => {
             currentPass = snap.val() || "1234"; 
+            
+            // Check if user is logged in with OLD password
+            const savedPass = localStorage.getItem("v_pass_token");
+            if(savedPass && savedPass !== currentPass) {
+                logoutUser(); // Password badalte hi logout!
+            }
         });
 
-        // App Unlock Login
         window.login = function() {
             const pass = document.getElementById('inputPass').value;
             if(pass === currentPass) {
                 localStorage.setItem("v_auth", "true");
+                localStorage.setItem("v_pass_token", currentPass); // Password ko token ki tarah save karna
                 showApp();
             } else { document.getElementById('err').style.display = 'block'; }
         };
 
-        // Admin PIN Verification
+        function logoutUser() {
+            localStorage.removeItem("v_auth");
+            localStorage.removeItem("v_pass_token");
+            location.reload(); // Page refresh karke parda wapas le aao
+        }
+
         window.verifyAdminPin = function() {
             const pin = document.getElementById('adminPinInput').value;
             if(pin === ADMIN_PIN) {
@@ -136,12 +147,14 @@
             } else { alert("Wrong Admin PIN!"); }
         };
 
-        // Save New Password
         window.saveNewPass = function() {
             const nPass = document.getElementById('newPassVal').value;
             if(nPass) {
                 set(ref(db, 'admin_settings/app_password'), nPass)
-                .then(() => { alert("Password Updated Successfully!"); closeAdmin(); });
+                .then(() => { 
+                    alert("Password Updated! All users will be logged out."); 
+                    closeAdmin(); 
+                });
             }
         };
 
@@ -150,23 +163,21 @@
             document.getElementById('mainContent').style.display = 'block';
         }
 
-        if(localStorage.getItem("v_auth") === "true") { showApp(); }
+        // Auto-login check
+        if(localStorage.getItem("v_auth") === "true" && localStorage.getItem("v_pass_token") === currentPass) { 
+            showApp(); 
+        }
 
-        // Secret Admin Trigger
         let clicks = 0;
         window.checkAdminTrigger = function() {
             clicks++;
-            if(clicks >= 5) { 
-                document.getElementById('adminPanel').style.display = 'flex'; 
-                clicks = 0; 
-            }
+            if(clicks >= 5) { document.getElementById('adminPanel').style.display = 'flex'; clicks = 0; }
         };
 
         window.closeAdmin = function() { 
             document.getElementById('adminPanel').style.display = 'none'; 
             document.getElementById('pinArea').style.display = 'block';
             document.getElementById('controlArea').style.display = 'none';
-            document.getElementById('adminPinInput').value = "";
         };
 
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
