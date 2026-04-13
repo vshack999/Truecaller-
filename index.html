@@ -3,164 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIKASH SAHU | PRO TERMINAL</title>
+    <title>VIKASH SAHU | SECURE TERMINAL</title>
     <style>
-        :root {
-            --primary: #00f2fe; /* Cyan */
-            --secondary: #4facfe; /* Blue */
-            --bg-start: #0f2027;
-            --bg-mid: #203a43;
-            --bg-end: #2c5364;
-        }
-
+        :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0f2027; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; color: #fff; }
+
+        /* --- LOGIN SCREEN --- */
+        #passOverlay {
+            position: fixed; inset: 0; background: radial-gradient(circle, #203a43, #0f2027);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+        }
+        .login-card {
+            background: rgba(0,0,0,0.8); padding: 40px; border: 2px solid var(--primary);
+            border-radius: 20px; text-align: center; box-shadow: 0 0 30px var(--primary); width: 90%; max-width: 350px;
+        }
+
+        /* --- ADMIN PANEL --- */
+        #adminPanel {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 11000; align-items: center; justify-content: center;
+        }
+        .admin-box {
+            background: #111; padding: 30px; border: 2px solid #ff0055; border-radius: 15px; width: 320px;
+            box-shadow: 0 0 20px #ff0055;
+        }
+
+        /* --- COMMON STYLES --- */
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid var(--secondary); color: #fff; border-radius: 8px; text-align: center; font-size: 16px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-cyan { background: var(--primary); color: #000; }
+        .btn-red { background: #ff0055; color: #fff; margin-top: 10px; }
+
+        /* --- MAIN UI --- */
+        #mainContent { display: none; }
+        .header { height: 110px; background: #000; border-bottom: 4px solid var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; position: fixed; top: 0; width: 100%; z-index: 1000; cursor: default; }
+        .header h1 { font-size: 36px; letter-spacing: 10px; color: var(--primary); text-shadow: 0 0 15px var(--primary); font-weight: 900; }
         
-        body { 
-            background: linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            font-family: 'Segoe UI', sans-serif; 
-            overflow: hidden; 
-            height: 100vh; 
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* BIGGER PRO HEADER */
-        .header {
-            height: 110px; /* Size bada kar diya */
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(15px);
-            border-bottom: 4px solid var(--primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            box-shadow: 0 5px 30px rgba(0, 242, 254, 0.6);
-        }
-
-        .header h1 { 
-            color: var(--primary); 
-            font-size: 36px; /* Bada font size */
-            letter-spacing: 10px; 
-            text-transform: uppercase;
-            text-shadow: 0 0 15px var(--primary), 0 0 30px var(--secondary);
-            font-weight: 900;
-        }
-
-        .header p {
-            color: #fff;
-            font-size: 11px;
-            letter-spacing: 4px;
-            margin-top: 5px;
-            opacity: 0.8;
-            font-family: monospace;
-        }
-
-        /* Viewport */
-        .viewport {
-            position: absolute; top: 110px; bottom: 60px; width: 100%;
-            overflow-y: auto; overflow-x: hidden;
-            background: #fff;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        iframe {
-            width: 100%;
-            height: 2200px;
-            border: none;
-            position: absolute;
-            top: -340px; /* Search box alignment */
-            left: 0;
-            z-index: 1;
-        }
-
-        /* White Masks */
-        .top-mask {
-            position: sticky; top: 0; width: 100%; height: 105px;
-            background: #fff; z-index: 10;
-        }
-
-        .bottom-mask {
-            position: absolute; 
-            top: 1180px; 
-            width: 100%; 
-            height: 1500px; 
-            background: #fff; 
-            z-index: 10;
-        }
-
-        /* PRO FOOTER */
-        .footer {
-            height: 60px; /* Bada size */
-            background: rgba(0, 0, 0, 0.95);
-            border-top: 2px solid var(--primary);
-            position: fixed; bottom: 0; width: 100%; z-index: 1000;
-            display: flex; align-items: center; justify-content: space-around;
-            color: var(--primary);
-            font-size: 13px;
-            font-family: monospace;
-            padding: 0 10px;
-        }
-
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-            border: 1px solid var(--primary);
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: 0.3s;
-        }
-
-        .footer a:hover {
-            background: var(--primary);
-            color: #000;
-            box-shadow: 0 0 10px var(--primary);
-        }
-
-        .scan-anim {
-            color: #fff;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
+        .viewport { position: absolute; top: 110px; bottom: 60px; width: 100%; overflow-y: auto; background: #fff; }
+        iframe { width: 100%; height: 2200px; border: none; position: absolute; top: -340px; left: 0; }
+        .top-mask { height: 105px; top: 0; position: sticky; background: #fff; z-index: 10; width: 100%; }
+        .bottom-mask { height: 1500px; top: 1180px; position: absolute; background: #fff; z-index: 10; width: 100%; }
+        .footer { height: 60px; background: #000; border-top: 2px solid var(--primary); position: fixed; bottom: 0; width: 100%; z-index: 1000; display: flex; align-items: center; justify-content: space-around; font-size: 12px; font-family: monospace; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>VIKASH SAHU</h1>
-        <p>SYSTEM ACCESS: LEVEL_ADMIN</p>
+    <div id="passOverlay">
+        <div class="login-card">
+            <h2 style="color:var(--primary); letter-spacing: 2px;">SYSTEM LOCKED</h2>
+            <input type="password" id="inputPass" placeholder="Enter Terminal Password...">
+            <button class="btn-cyan" onclick="login()">Unlock Access</button>
+            <p id="err" style="color:red; font-size:12px; margin-top:10px; display:none;">Invalid Credentials!</p>
+        </div>
     </div>
 
-    <div class="viewport">
-        <div class="top-mask"></div>
+    <div id="adminPanel">
+        <div class="admin-box">
+            <h3 style="color:#ff0055; margin-bottom:15px; text-align:center; letter-spacing: 2px;">MASTER CONTROL</h3>
+            <div id="pinArea">
+                <label style="font-size:10px; color:#aaa;">ENTER ADMIN PIN</label>
+                <input type="password" id="adminPinInput" placeholder="******">
+                <button class="btn-red" onclick="verifyAdminPin()">Verify PIN</button>
+            </div>
+            <div id="controlArea" style="display:none;">
+                <label style="font-size:10px; color:#aaa;">NEW APP PASSWORD</label>
+                <input type="text" id="newPassVal">
+                <button class="btn-cyan" onclick="saveNewPass()">Update Password</button>
+            </div>
+            <button style="background:#333; color:#fff; margin-top:10px;" onclick="closeAdmin()">Close</button>
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <div class="header" onclick="checkAdminTrigger()">
+            <h1>VIKASH SAHU</h1>
+            <p style="font-size:9px; color:rgba(255,255,255,0.3); letter-spacing: 4px;">SECURE NODE ALPHA-7</p>
+        </div>
+        <div class="viewport">
+            <div class="top-mask"></div>
+            <iframe src="https://goutamhx.github.io/TrueCallCheck-Web/"></iframe>
+            <div class="bottom-mask"></div>
+        </div>
+        <div class="footer">
+            <span style="color:var(--primary); font-weight: bold;">● ONLINE_DATA</span>
+            <span id="clock"></span>
+            <span>DEV: vikash bhai </span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDR_7jysqTcWxMehNsHLLgcYj_3uQNj1ks",
+            authDomain: "vs-store-181d6.firebaseapp.com",
+            databaseURL: "https://vs-store-181d6-default-rtdb.firebaseio.com",
+            projectId: "vs-store-181d6",
+            storageBucket: "vs-store-181d6.firebasestorage.app",
+            messagingSenderId: "77073269493",
+            appId: "1:77073269493:web:e89f041dc184684c55bbbc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
         
-        <iframe src="https://goutamhx.github.io/TrueCallCheck-Web/"></iframe>
-        
-        <div class="bottom-mask"></div>
-    </div>
+        let currentPass = "";
+        const ADMIN_PIN = "493228"; // Aapka secret PIN
 
-    <div class="footer">
-        <span class="scan-anim">ONLINE_DATA</span>
-        <span id="clock" style="font-weight: bold;"></span>
-        <span>DEV: <a href="https://t.me/Vikashsahu07" target="_blank">@Vikashsahu07</a></span>
-    </div>
+        // Fetch Password from Firebase
+        onValue(ref(db, 'admin_settings/app_password'), (snap) => {
+            currentPass = snap.val() || "1234"; 
+        });
 
-    <script>
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-        }, 1000);
+        // App Unlock Login
+        window.login = function() {
+            const pass = document.getElementById('inputPass').value;
+            if(pass === currentPass) {
+                localStorage.setItem("v_auth", "true");
+                showApp();
+            } else { document.getElementById('err').style.display = 'block'; }
+        };
+
+        // Admin PIN Verification
+        window.verifyAdminPin = function() {
+            const pin = document.getElementById('adminPinInput').value;
+            if(pin === ADMIN_PIN) {
+                document.getElementById('pinArea').style.display = 'none';
+                document.getElementById('controlArea').style.display = 'block';
+                document.getElementById('newPassVal').value = currentPass;
+            } else { alert("Wrong Admin PIN!"); }
+        };
+
+        // Save New Password
+        window.saveNewPass = function() {
+            const nPass = document.getElementById('newPassVal').value;
+            if(nPass) {
+                set(ref(db, 'admin_settings/app_password'), nPass)
+                .then(() => { alert("Password Updated Successfully!"); closeAdmin(); });
+            }
+        };
+
+        function showApp() {
+            document.getElementById('passOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        if(localStorage.getItem("v_auth") === "true") { showApp(); }
+
+        // Secret Admin Trigger
+        let clicks = 0;
+        window.checkAdminTrigger = function() {
+            clicks++;
+            if(clicks >= 5) { 
+                document.getElementById('adminPanel').style.display = 'flex'; 
+                clicks = 0; 
+            }
+        };
+
+        window.closeAdmin = function() { 
+            document.getElementById('adminPanel').style.display = 'none'; 
+            document.getElementById('pinArea').style.display = 'block';
+            document.getElementById('controlArea').style.display = 'none';
+            document.getElementById('adminPinInput').value = "";
+        };
+
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
-
 </body>
 </html>
