@@ -2,111 +2,224 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vikash Pro Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f2027">
+    <title>V-Store Premium Cloud</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
     <style>
-        /* Body with your specific Gradient */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0f2027;
+            background: radial-gradient(circle at 0% 0%, #203a43 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, #2c5364 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, #0f2027 100%);
+            height: 100vh; color: white; overflow: hidden; display: flex; flex-direction: column;
+        }
+
+        /* Modals */
+        .full-modal {
+            position: fixed; inset: 0; background: rgba(15, 32, 39, 0.98);
+            backdrop-filter: blur(25px); z-index: 999; display: none;
+            flex-direction: column; justify-content: center; align-items: center; padding: 30px;
+        }
+
+        .modal-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,254,0.3);
+            padding: 25px; border-radius: 25px; width: 100%; max-width: 350px;
+            box-shadow: 0 0 30px rgba(0,242,254,0.2); text-align: center;
+        }
+
+        input {
+            width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); 
+            color: white; outline: none; font-size: 14px;
+        }
+
+        .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-blue { background: linear-gradient(45deg, #00f2fe, #4facfe); color: #0f2027; }
+        .btn-red { background: rgba(255, 75, 43, 0.1); color: #ff4b2b; border: 1px solid #ff4b2b; margin-top: 10px; }
+
+        /* UI Elements */
+        .header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .user-info h2 { font-size: 26px; font-weight: 800; letter-spacing: -1px; cursor: pointer; color: #fff; }
+        .user-info p { font-size: 12px; color: #00f2fe; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .container { flex: 1; padding: 10px 20px; overflow-y: auto; }
+        .card-label { font-size: 11px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin: 25px 0 15px 5px; display: block; letter-spacing: 2px; }
+
+        /* Premium App Link Card */
+        .app-link {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px; padding: 16px; margin-bottom: 15px; display: flex; align-items: center;
+            text-decoration: none; color: white; transition: 0.3s;
+            backdrop-filter: blur(10px); cursor: pointer;
+        }
+        .app-link:active { transform: scale(0.95); background: rgba(0, 242, 254, 0.1); border-color: #00f2fe; }
+
+        .icon-box { 
+            width: 54px; height: 54px; border-radius: 18px; 
+            background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.2);
+            display: flex; justify-content: center; align-items: center; margin-right: 18px; font-size: 26px; 
             overflow: hidden;
         }
+        .icon-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Glassmorphism Container */
-        .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            width: 350px;
-        }
+        .app-info h4 { font-size: 17px; font-weight: 700; }
 
-        h2 {
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-size: 1.5rem;
-            color: #00f2fe;
-            text-shadow: 0 0 10px #00f2fe;
-        }
+        /* Bottom Nav */
+        .nav-bar { margin: 0 20px 30px; background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); height: 75px; border-radius: 32px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .nav-item { font-size: 26px; color: rgba(255,255,255,0.2); }
+        .nav-item.active { color: #00f2fe; }
 
-        /* Link Buttons Styling */
-        .link-card {
-            display: block;
-            text-decoration: none;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: all 0.4s ease;
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-            border: 2px solid transparent;
-        }
-
-        /* Neon Glow Effect - Primary & Secondary Mix */
-        .link-card {
-            color: #00f2fe;
-            border-color: #00f2fe;
-            background: rgba(0, 242, 254, 0.05);
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
-        }
-
-        /* Hover Animations */
-        .link-card:hover {
-            color: #fff;
-            background: linear-gradient(90deg, #00f2fe, #4facfe);
-            box-shadow: 0 0 20px #00f2fe, 0 0 40px #4facfe;
-            transform: translateY(-5px) scale(1.05);
-        }
-
-        /* Background Animated Circles (Optional for Pro Look) */
-        .bg-circle {
-            position: absolute;
-            z-index: -1;
-            border-radius: 50%;
-            background: linear-gradient(#00f2fe, #4facfe);
-            filter: blur(80px);
-            opacity: 0.3;
-        }
-
-        .circle-1 { width: 300px; height: 300px; top: -100px; right: -50px; }
-        .circle-2 { width: 250px; height: 250px; bottom: -50px; left: -50px; }
-
+        /* Admin List */
+        .admin-link-list { margin-top: 20px; text-align: left; max-height: 150px; overflow-y: auto; }
+        .admin-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-circle circle-1"></div>
-    <div class="bg-circle circle-2"></div>
-
-    <div class="container">
-        <h2>Truecaller Black </h2>
-
-        <a href="https://vshack999.github.io/Truecaller-/" target="_blank" class="link-card">
-            Truecaller Number info
-        </a>
-
-        <a href="https://vshack999.github.io/Vikash-sahu/" target="_blank" class="link-card">
-            My website 
-        </a>
-
-        <a href="https://www.instagram.com/cg_vikash_sahu__07?igsh=MXV6ZjVuMTZxOHVudQ==" target="_blank" class="link-card">
-            Instagram id
-        </a>
+    <div id="nameModal" class="full-modal">
+        <div class="modal-card">
+            <h2 id="modalTitle" style="color:#00f2fe; margin-bottom:20px;">Identity Setup</h2>
+            <input type="text" id="userNameInput" placeholder="Enter Name...">
+            <button class="btn btn-blue" onclick="saveUserName()">VERIFY & START</button>
+            <p id="cancelBtn" onclick="closeNameModal()" style="margin-top:15px; font-size:12px; color:rgba(255,255,255,0.3); display:none; cursor:pointer;">Cancel</p>
+        </div>
     </div>
 
+    <div id="adminModal" class="full-modal">
+        <div class="modal-card" style="max-height: 95vh; overflow-y: auto;">
+            <h3 style="color:#00f2fe; margin-bottom:15px;">Admin Panel</h3>
+            <input type="text" id="linkEmoji" placeholder="Emoji (e.g. 🚀)">
+            <input type="text" id="linkImg" placeholder="Photo URL (ImgBB link)">
+            <input type="text" id="linkTitle" placeholder="Service Name">
+            <input type="text" id="linkUrl" placeholder="Link URL">
+            <button class="btn btn-blue" onclick="addNewLink()">UPLOAD SERVICE</button>
+            <div id="adminLinkList" class="admin-link-list"></div>
+            <button class="btn btn-red" onclick="document.getElementById('adminModal').style.display='none'">EXIT</button>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="user-info">
+            <p>Authorized Profile</p>
+            <h2 id="displayDisplayName" onclick="openNameChange()">User</h2>
+        </div>
+        <div onclick="openNameChange()" style="width:50px; height:50px; border-radius:15px; background:linear-gradient(45deg, #00f2fe, #4facfe); display:flex; justify-content:center; align-items:center; box-shadow: 0 8px 20px rgba(0, 242, 254, 0.3); cursor:pointer;">👤</div>
+    </header>
+
+    <div class="container">
+        <span class="card-label">Verified Cloud Links</span>
+        <div id="userLinkList"></div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item active">🏠</div>
+        <div class="nav-item">🧩</div>
+        <div onclick="handleAdminTrigger()" class="nav-item" style="cursor:pointer;">⚙️</div>
+    </nav>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDR_7jysqTcWxMehNsHLLgcYj_3uQNj1ks",
+            authDomain: "vs-store-181d6.firebaseapp.com",
+            databaseURL: "https://vs-store-181d6-default-rtdb.firebaseio.com",
+            projectId: "vs-store-181d6",
+            storageBucket: "vs-store-181d6.firebasestorage.app",
+            messagingSenderId: "77073269493",
+            appId: "1:77073269493:web:e89f041dc184684c55bbbc"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        window.onload = function() {
+            const savedName = localStorage.getItem('v_user_name');
+            if (!savedName) document.getElementById('nameModal').style.display = 'flex';
+            else document.getElementById('displayDisplayName').innerText = savedName;
+            loadLinks();
+        }
+
+        function openNameChange() {
+            document.getElementById('modalTitle').innerText = "Update Profile";
+            document.getElementById('userNameInput').value = localStorage.getItem('v_user_name') || "";
+            document.getElementById('nameModal').style.display = 'flex';
+            document.getElementById('cancelBtn').style.display = 'block';
+        }
+        function closeNameModal() { document.getElementById('nameModal').style.display = 'none'; }
+        function saveUserName() {
+            const name = document.getElementById('userNameInput').value.trim();
+            if(name) {
+                localStorage.setItem('v_user_name', name);
+                document.getElementById('displayDisplayName').innerText = name;
+                document.getElementById('nameModal').style.display = 'none';
+            }
+        }
+
+        let clicks = 0;
+        function handleAdminTrigger() {
+            clicks++;
+            if(clicks >= 5) {
+                clicks = 0;
+                if(prompt("Admin PIN:") === "493228") {
+                    document.getElementById('adminModal').style.display = 'flex';
+                    loadAdminLinks();
+                }
+            }
+            setTimeout(() => { clicks = 0; }, 3000);
+        }
+
+        function addNewLink() {
+            const emj = document.getElementById('linkEmoji').value || '🔗';
+            const img = document.getElementById('linkImg').value.trim();
+            const ttl = document.getElementById('linkTitle').value;
+            const url = document.getElementById('linkUrl').value;
+            if(ttl && url) {
+                db.ref('shared_links/' + Date.now()).set({ emoji: emj, image: img, title: ttl, url: url });
+                document.getElementById('linkEmoji').value = '';
+                document.getElementById('linkImg').value = '';
+                document.getElementById('linkTitle').value = '';
+                document.getElementById('linkUrl').value = '';
+            }
+        }
+
+        function loadLinks() {
+            db.ref('shared_links').on('value', (snap) => {
+                const data = snap.val();
+                let html = '';
+                for(let id in data) {
+                    // Check if image exists, otherwise show emoji
+                    let iconContent = data[id].image ? `<img src="${data[id].image}">` : data[id].emoji;
+                    
+                    html += `
+                        <div class="app-link" onclick="window.open('${data[id].url}', '_blank')">
+                            <div class="icon-box">${iconContent}</div>
+                            <div class="app-info">
+                                <h4>${data[id].title}</h4>
+                            </div>
+                        </div>`;
+                }
+                document.getElementById('userLinkList').innerHTML = html || '<p style="text-align:center; opacity:0.2; margin-top:30px;">Cloud System Ready...</p>';
+            });
+        }
+
+        function loadAdminLinks() {
+            db.ref('shared_links').on('value', (snap) => {
+                const data = snap.val();
+                let html = '';
+                for(let id in data) {
+                    html += `<div class="admin-item"><span>${data[id].title}</span><span onclick="deleteLink('${id}')" style="color:#ff4b2b; cursor:pointer;">DEL</span></div>`;
+                }
+                document.getElementById('adminLinkList').innerHTML = html;
+            });
+        }
+        function deleteLink(id) { if(confirm("Delete?")) db.ref('shared_links/' + id).remove(); }
+    </script>
 </body>
 </html>
