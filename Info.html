@@ -1,196 +1,148 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Number Info Tracker</title>
+    <title>Number Info - Dev Vikash Sahu</title>
     <style>
-        /* CSS Part Starts */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
         body {
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-            height: 100vh;
+            background: #050505;
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
             color: white;
-            overflow: hidden;
         }
 
-        .container {
-            width: 95%;
-            max-width: 450px;
-            padding: 20px;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
+        /* Glassmorphism Card */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
+            padding: 40px 30px;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 400px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
-        h2 {
-            color: #4cc9f0;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        p {
-            font-size: 0.85rem;
-            margin-bottom: 25px;
-            color: #bdc3c7;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        h1 { color: #00d2ff; font-size: 24px; margin-bottom: 10px; text-transform: uppercase; }
+        p { color: #888; font-size: 14px; margin-bottom: 25px; }
 
         input {
             width: 100%;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: #fff;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #00ff88;
+            font-size: 16px;
+            margin-bottom: 20px;
             outline: none;
-            font-size: 1rem;
             transition: 0.3s;
         }
 
-        input:focus {
-            border-color: #4cc9f0;
-            background: rgba(255, 255, 255, 0.15);
-        }
+        input:focus { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0, 210, 255, 0.3); }
 
         button {
             width: 100%;
-            padding: 12px;
-            background: #4361ee;
+            padding: 15px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             color: white;
             font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 1rem;
         }
 
-        button:hover {
-            background: #3f37c9;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
-        }
+        button:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4); }
 
-        .loader {
-            display: none;
-            margin-top: 20px;
-            color: #f72585;
-            font-weight: bold;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        .result-box {
-            display: none;
+        #resultBox {
             margin-top: 25px;
-            background: rgba(0, 0, 0, 0.4);
+            background: #000;
             padding: 15px;
             border-radius: 12px;
             text-align: left;
-            border-left: 4px solid #4cc9f0;
+            border: 1px solid #333;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-size: 0.9rem;
-            color: #00ff88;
-            font-family: 'Courier New', Courier, monospace;
+        pre { color: #00ff88; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+
+        .dev-id {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #555;
+            letter-spacing: 1px;
         }
 
-        .footer {
-            margin-top: 20px;
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.3);
-        }
-        /* CSS Part Ends */
+        .dev-id span { color: #00d2ff; font-weight: bold; }
+
+        .loading { display: none; margin: 15px 0; color: #f39c12; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="glass-card">
-            <h2>Number Lookup</h2>
-            <p>Apna number enter karke details check karein</p>
-            
-            <div class="input-group">
-                <input type="number" id="phoneInput" placeholder="Enter Number (91...)" />
-                <button onclick="getInfo()">Fetch Details</button>
-            </div>
+    <div class="card">
+        <h1>TRACKER PRO</h1>
+        <p>Enter mobile number to get details</p>
 
-            <div id="loader" class="loader">Processing Request...</div>
+        <input type="number" id="numInput" placeholder="Enter Mobile (91xxxxxxxx)" />
+        <button onclick="fetchData()">SEARCH INFO</button>
 
-            <div id="resultDisplay" class="result-box">
-                <pre id="apiOutput"></pre>
-            </div>
+        <div id="loader" class="loading">Fetching Data...</div>
 
-            <div class="footer">Created for Project Support</div>
+        <div id="resultBox">
+            <pre id="output"></pre>
+        </div>
+
+        <div class="dev-id">
+            DEVELOPED BY: <span>VIKASH SAHU</span>
         </div>
     </div>
 
     <script>
-        // JavaScript Part Starts
-        async function getInfo() {
-            const number = document.getElementById('phoneInput').value;
+        async function fetchData() {
+            const num = document.getElementById('numInput').value;
+            const output = document.getElementById('output');
+            const resultBox = document.getElementById('resultBox');
             const loader = document.getElementById('loader');
-            const resultBox = document.getElementById('resultDisplay');
-            const output = document.getElementById('apiOutput');
 
-            if (!number) {
-                alert("Bhai, pehle number toh daalo!");
+            if (!num) {
+                alert("Please enter a number!");
                 return;
             }
 
-            // UI Reset
             loader.style.display = "block";
             resultBox.style.display = "none";
 
-            const url = `https://exploits-api.site/anish/api.php?key=number&num=${number}`;
+            // CORS fix ke liye proxy use kar rahe hain
+            const proxy = "https://api.allorigins.win/get?url=";
+            const apiUrl = encodeURIComponent(`https://exploits-api.site/anish/api.php?key=number&num=${num}`);
 
             try {
-                const response = await fetch(url);
-                const data = await response.text();
-
+                const response = await fetch(proxy + apiUrl);
+                const data = await response.json();
+                
                 loader.style.display = "none";
                 resultBox.style.display = "block";
                 
-                // Response display
-                output.innerText = data;
+                // data.contents mein API ka asli response hoga
+                output.innerText = data.contents;
                 
             } catch (error) {
                 loader.style.display = "none";
-                alert("API Error! Connection check karein.");
-                console.error("Error:", error);
+                alert("API Error! Possible CORS issue or invalid key.");
+                console.error(error);
             }
         }
-        // JavaScript Part Ends
     </script>
-
 </body>
 </html>
