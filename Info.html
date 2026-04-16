@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Info Tracker</title>
+    <style>
+        /* CSS Part Starts */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            color: #4cc9f0;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            color: #bdc3c7;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #4cc9f0;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4361ee;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background: #3f37c9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+
+        .loader {
+            display: none;
+            margin-top: 20px;
+            color: #f72585;
+            font-weight: bold;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 25px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: left;
+            border-left: 4px solid #4cc9f0;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9rem;
+            color: #00ff88;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+        /* CSS Part Ends */
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="glass-card">
+            <h2>Number Lookup</h2>
+            <p>Apna number enter karke details check karein</p>
+            
+            <div class="input-group">
+                <input type="number" id="phoneInput" placeholder="Enter Number (91...)" />
+                <button onclick="getInfo()">Fetch Details</button>
+            </div>
+
+            <div id="loader" class="loader">Processing Request...</div>
+
+            <div id="resultDisplay" class="result-box">
+                <pre id="apiOutput"></pre>
+            </div>
+
+            <div class="footer">Created for Project Support</div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Part Starts
+        async function getInfo() {
+            const number = document.getElementById('phoneInput').value;
+            const loader = document.getElementById('loader');
+            const resultBox = document.getElementById('resultDisplay');
+            const output = document.getElementById('apiOutput');
+
+            if (!number) {
+                alert("Bhai, pehle number toh daalo!");
+                return;
+            }
+
+            // UI Reset
+            loader.style.display = "block";
+            resultBox.style.display = "none";
+
+            const url = `https://exploits-api.site/anish/api.php?key=number&num=${number}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.text();
+
+                loader.style.display = "none";
+                resultBox.style.display = "block";
+                
+                // Response display
+                output.innerText = data;
+                
+            } catch (error) {
+                loader.style.display = "none";
+                alert("API Error! Connection check karein.");
+                console.error("Error:", error);
+            }
+        }
+        // JavaScript Part Ends
+    </script>
+
+</body>
+</html>
